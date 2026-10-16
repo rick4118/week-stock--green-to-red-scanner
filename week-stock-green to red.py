@@ -49,44 +49,44 @@ def check_password():
 if check_password():
 
     # --- 核心計算邏輯 ---
-def compute_macd(df, fast=12, slow=26, signal=9):
-    df['EMA_fast'] = df['Close'].ewm(span=fast, adjust=False).mean()
-    df['EMA_slow'] = df['Close'].ewm(span=slow, adjust=False).mean()
-    df['DIF'] = df['EMA_fast'] - df['EMA_slow']
-    df['MACD'] = df['DIF'].ewm(span=signal, adjust=False).mean()
-    df['OSC'] = df['DIF'] - df['MACD']
-    return df
+    def compute_macd(df, fast=12, slow=26, signal=9):
+        df['EMA_fast'] = df['Close'].ewm(span=fast, adjust=False).mean()
+        df['EMA_slow'] = df['Close'].ewm(span=slow, adjust=False).mean()
+        df['DIF'] = df['EMA_fast'] - df['EMA_slow']
+        df['MACD'] = df['DIF'].ewm(span=signal, adjust=False).mean()
+        df['OSC'] = df['DIF'] - df['MACD']
+        return df
 
-def scan_weekly_stocks_by_specific_date(ticker_list, target_date):
-    result = []
-    target_dt = pd.Timestamp(target_date)
-    target_year_week = target_dt.to_period('W')
-    start_date = (target_dt - pd.Timedelta(days=365*2)).strftime('%Y-%m-%d')
-    end_date = (target_dt + pd.Timedelta(days=14)).strftime('%Y-%m-%d')
+    def scan_weekly_stocks_by_specific_date(ticker_list, target_date):
+        result = []
+        target_dt = pd.Timestamp(target_date)
+        target_year_week = target_dt.to_period('W')
+        start_date = (target_dt - pd.Timedelta(days=365*2)).strftime('%Y-%m-%d')
+        end_date = (target_dt + pd.Timedelta(days=14)).strftime('%Y-%m-%d')
 
-    for ticker in ticker_list:
-        try:
-            df = yf.download(ticker, start=start_date, end=end_date, interval="1wk", auto_adjust=False, progress=False)
-            if isinstance(df.columns, pd.MultiIndex):
-                df.columns = df.columns.get_level_values(0)
-            df = df.dropna(subset=["Close"])
-            if len(df) < 35: continue
-            df = compute_macd(df)
-            df_periods = df.index.to_period('W')
-            valid_mask = df_periods <= target_year_week
-            if not valid_mask.any(): continue
-            target_idx = df[valid_mask].index[-1]
-            idx_loc = df.index.get_loc(target_idx)
-            if idx_loc < 1: continue
-            recent = df.iloc[idx_loc-1 : idx_loc+1].copy()
-            osc_val = recent['OSC'].values.flatten()
-            # 綠轉紅條件：前一周為綠柱 (<0)，當周轉為紅柱 (>=0)
-            green_to_red = (osc_val[-2] < 0) and (osc_val[-1] >= 0)
-            if green_to_red:
-                result.append(ticker)
-        except:
-            pass
-    return result
+        for ticker in ticker_list:
+            try:
+                df = yf.download(ticker, start=start_date, end=end_date, interval="1wk", auto_adjust=False, progress=False)
+                if isinstance(df.columns, pd.MultiIndex):
+                    df.columns = df.columns.get_level_values(0)
+                df = df.dropna(subset=["Close"])
+                if len(df) < 35: continue
+                df = compute_macd(df)
+                df_periods = df.index.to_period('W')
+                valid_mask = df_periods <= target_year_week
+                if not valid_mask.any(): continue
+                target_idx = df[valid_mask].index[-1]
+                idx_loc = df.index.get_loc(target_idx)
+                if idx_loc < 1: continue
+                recent = df.iloc[idx_loc-1 : idx_loc+1].copy()
+                osc_val = recent['OSC'].values.flatten()
+                # 綠柱轉紅柱條件：前一周為綠柱 (<0)，當周轉為紅柱 (>=0)
+                green_to_red = (osc_val[-2] < 0) and (osc_val[-1] >= 0)
+                if green_to_red:
+                    result.append(ticker)
+            except:
+                pass
+        return result
 
     # --- App 主介面 ---
     st.title("📊 周K MACD 綠轉紅篩選器")
