@@ -10,39 +10,40 @@ st.set_page_config(
     layout="centered"
 )
 
-# =====================================================================
-# 1. 密碼驗證功能 (Password Authentication)
-# =====================================================================
+# --- 密碼保護功能 ---
 def check_password():
-    """Returns True if the user had the correct password."""
+    """如果密碼正確則回傳 True，否則顯示輸入框並回傳 False"""
     def password_entered():
-        if st.session_state["password"] == "592888":
+        if st.session_state["password"] == "592888":  # 👈 在這裡設定您的專屬密碼！
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # 清除密碼輸入防外洩
+            del st.session_state["password"]  # 刪除暫存密碼以策安全
         else:
             st.session_state["password_correct"] = False
 
     if "password_correct" not in st.session_state:
-        # 尚未登入，顯示輸入框
+        # 第一次進入，顯示輸入密碼畫面
+        st.title("🔒 系統安全驗證")
         st.text_input(
-            "請輸入密碼：", type="password", on_change=password_entered, key="password"
+            "請輸入密碼以存取周K MACD green to red篩選器：",
+            type="password",
+            on_change=password_entered,
+            key="password"
         )
         return False
     elif not st.session_state["password_correct"]:
-        # 密碼錯誤，重新顯示輸入框與錯誤訊息
+        # 密碼輸入錯誤，重新顯示輸入框與錯誤訊息
+        st.title("🔒 系統安全驗證")
         st.text_input(
-            "請輸入密碼：", type="password", on_change=password_entered, key="password"
+            "請輸入密碼以存取周K MACD 篩選器：",
+            type="password",
+            on_change=password_entered,
+            key="password"
         )
-        st.error("😕 密碼錯誤，請重新輸入！")
+        st.error("❌ 密碼錯誤，請重新輸入！")
         return False
     else:
         # 密碼正確
         return True
-
-# 檢查密碼，若未通過則終止程式執行
-if not check_password():
-    st.stop()
-
 # =====================================================================
 # 2. 核心計算與篩選邏輯 (MACD Compute & Scan Functions)
 # =====================================================================
