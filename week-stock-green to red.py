@@ -3,6 +3,13 @@ import yfinance as yf
 import pandas as pd
 from datetime import datetime
 
+# 設定網頁標題與排版
+st.set_page_config(
+    page_title="周K MACD 篩選器 (受保護)",
+    page_icon="📊",
+    layout="centered"
+)
+
 # =====================================================================
 # 1. 密碼驗證功能 (Password Authentication)
 # =====================================================================
