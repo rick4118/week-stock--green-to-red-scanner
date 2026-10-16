@@ -24,7 +24,7 @@ def check_password():
         # 第一次進入，顯示輸入密碼畫面
         st.title("🔒 系統安全驗證")
         st.text_input(
-            "請輸入密碼以存取周K MACD green to red篩選器：",
+            "請輸入密碼以存取周K MACD 綠柱轉紅柱篩選器：",
             type="password",
             on_change=password_entered,
             key="password"
@@ -34,7 +34,7 @@ def check_password():
         # 密碼輸入錯誤，重新顯示輸入框與錯誤訊息
         st.title("🔒 系統安全驗證")
         st.text_input(
-            "請輸入密碼以存取周K MACD 篩選器：",
+            "請輸入密碼以存取周K MACD 綠柱轉紅柱篩選器：",
             type="password",
             on_change=password_entered,
             key="password"
@@ -99,7 +99,7 @@ def scan_weekly_stocks_by_specific_date(ticker_list, target_date):
 # =====================================================================
 # 3. Streamlit 介面 (Streamlit UI)
 # =====================================================================
-st.title("📊 周K MACD 綠轉紅篩選器")
+st.title("📊 周K MACD 綠柱轉紅柱篩選器")
 
 # 預設股票清單
 default_tickers_list = ['0056.TW', '1301.TW', '1303.TW', '1308.TW', '1312A.TW', '1316.TW', '1319.TW', '1326.TW', '1336.TWO', '1416.TW', '1440.TW', '1504.TW', '1515.TW', '1519.TW', '1558.TW']
